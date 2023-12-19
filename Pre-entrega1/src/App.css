@@ -1,0 +1,35 @@
+*{
+    margin:0 ;
+    padding:0 ;
+    box-sizing: border-box;
+
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px;
+    padding: 5px;
+}
+
+nav div img{
+    height: 50px;
+    width: 50px;
+}
+
+.logo{
+    display: flex;
+}
+
+.logo img{
+    height: 70px;
+    width: 70px;
+}
+
+nav h1{
+    font-size: 60px;
+}
+
+
+
