@@ -1,26 +1,39 @@
 import React, { useEffect, useState } from 'react'
-import { getProductos, getProductByCat } from './assets/arrayProductos'
+
 import ItemList from './ItemList'
 import { useParams } from 'react-router-dom'
 
+import { getDocs, collection, query, where, QueryStartAtConstraint } from 'firebase/firestore'
+import db from '../db/db'
+
 const ItemListContainer = ({greeting}) => {
     const [productos, setProductos] =useState([])
+    const [loading, setLoading] =useState(true)
 
-    const {categoriaId} = useParams()
+    const categoria = useParams().categoria
 
     useEffect(()=>{
+        setLoading(true)
 
-        const buscarCategoria = categoriaId ? getProductByCat : getProductos
+        const collectionRef = categoria
+        ? query (collection(db, "productos"),where("categoria", "==" ,  categoria))
+        : collection(db,"productos")
 
-        buscarCategoria(categoriaId)
-        .then(response => {
-            setProductos(response)
+        getDocs(collectionRef)
+        .then(response=> {
+            const productosAdapted = response.docs.map(doc => {
+                const data=doc.data()
+                return { id: doc.id, ...data}
+            })
+            setProductos(productosAdapted)
         })
-        .catch(error=>{
+        .catch(error=> {
             console.log(error)
         })
-    }, [categoriaId])
-
+        .finally(()=>{
+            setLoading(false)
+        })
+    })
 
     return (
         <div>

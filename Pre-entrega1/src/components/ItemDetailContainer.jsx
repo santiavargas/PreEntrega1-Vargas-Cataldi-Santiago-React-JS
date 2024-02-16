@@ -1,27 +1,40 @@
 import { useEffect, useState } from "react"
-import { getProductById } from "./assets/arrayProductos"
 import ItemDetail from "./ItemDetail"
 import { useParams } from "react-router-dom"
 
+import { getDoc, doc} from 'firebase/firestore'
+import db from '../db/db'
+
 
 const ItemDetailContainer = () => {
-    const [producto, setProductos] = useState(null)
+    const [productos, setProducto] = useState(null)
+    const [loading, setLoading] =useState(true)
 
     const {itemId} = useParams()
 
-    useEffect(() => {
-        getProductById(itemId)
-        .then(response =>{
-            setProductos(response)
-        })
-        .catch(error =>{
-            console.log(error)
-        })
-    }, [])
+    useEffect(()=>{
+        setLoading(true)
+
+        const docRef=doc(db,"productos", itemId)
+
+        getDoc(docRef) 
+            .then(response=>{
+                const data = response.data()
+                const productoAdapted = { id: response.id, ...data}
+                setProducto(productoAdapted)
+            })
+            .catch(error=>{
+                console.log(error)
+            })
+            .finally(()=>{
+                setLoading(false)
+            })
+
+    },[itemId])
 
     return(
         <div className='itemListContainer'>
-            <ItemDetail {...producto}/>
+            <ItemDetail {...productos}/>
         </div>
     )
 
